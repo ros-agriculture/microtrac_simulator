@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <name>microtrac_gazebo</name>
+  <version>0.0.0</version>
+  <description>The microtrac gazebo package</description>
+
+  <maintainer email="matt@rosagriculture.org">Matt Droter</maintainer>
+  <author email="ian@ianthe.engineer">Ian McMahon</author>
+
+  <license>MIT</license>
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>microtrac_description</run_depend>
+
+</package>
