@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<launch>
+  
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <param name="robot_description"
+   command="$(find xacro)/xacro --inorder $(find microtrac_description)/urdf/microtrac.urdf.xacro gazebo:=true"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_world" args="0 0 0 0 0 0 1 odom base_link" />
+
+  <node name="robot_state_publisher" type="robot_state_publisher" pkg="robot_state_publisher" output="screen"/>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find microtrac_description)config/microtrac.rviz" required="true"/>
+
+  <!-- Bring up Gazebo itself -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <!-- arg name="world_name" value="$(find microtrac_gazebo)/worlds/microtrac.world"/ -->
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+  </include>
+<!-- https://github.com/davetcoleman/ros_control_boilerplate/blob/kinetic-devel/rrbot_control/config/rrbot_controllers.yaml -->
+<!-- http://wiki.ros.org/diff_drive_controller -->
+<!-- https://github.com/ros-controls/ros_controllers/tree/kinetic-devel/diff_drive_controller -->
+<!-- http://wiki.ros.org/controller_manager -->
+<!-- https://github.com/davetcoleman/ros_control_boilerplate -->
+<!-- https://github.com/husky/husky/blob/indigo-devel/husky_control/config/control.yaml -->
+<!-- http://answers.gazebosim.org/question/7308/parallel-robots-implementing-close-kinematic-chains/ -->
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-param robot_description -urdf -z 0.5 -model microtrac" />
+
+    <!-- Load controller manager -->
+    <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false"
+          output="screen" args="spawn joint_state_controller position_trajectory_controller" />
+
+</launch>
