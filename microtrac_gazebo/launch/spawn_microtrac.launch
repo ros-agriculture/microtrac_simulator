@@ -25,69 +25,16 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 -->
 <launch>
 
-  <arg name="laser_enabled" default="true"/>
-  <arg name="ur5_enabled" default="false"/>
-  <arg name="kinect_enabled" default="false"/>
+<!--  <arg name="laser_enabled" default="true"/>-->
   <arg name="robot_initial_pose" default="$(optenv ROBOT_INITIAL_POSE)"/>
-  <arg name="microtrac_gazebo_description" default="$(optenv microtrac_GAZEBO_DESCRIPTION)"/>
-  <arg name="ur5_control_yaml_file" default="$(find microtrac_control)/config/control_ur5.yaml"/>
+  <arg name="microtrac_gazebo_description" default="$(find microtrac_gazebo)/urdf/description.gazebo.xacro"/>
 
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(arg microtrac_gazebo_description)'
-    laser_enabled:=$(arg laser_enabled)
-    ur5_enabled:=$(arg ur5_enabled)
-    kinect_enabled:=$(arg kinect_enabled)
-    " />
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(arg microtrac_gazebo_description)'" />
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
   <!-- Load microtrac control information -->
-  <include file="$(find microtrac_control)/launch/control.launch"/>
-
-  <!-- Include ros_control configuration for ur5, only used in simulation -->
-  <group if="$(arg ur5_enabled)">
-
-    <!-- Load UR5 controllers -->
-    <rosparam command="load" file="$(arg ur5_control_yaml_file)" />
-    <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" args="arm_controller --shutdown-timeout 3"/>
-
-    <!-- Fake Calibration -->
-    <node pkg="rostopic" type="rostopic" name="fake_joint_calibration" args="pub calibrated std_msgs/Bool true" />
-
-    <!-- Stow the arm -->
-    <node pkg="microtrac_control" type="stow_ur5" name="stow_ur5"/>
-
-  </group>
-
-  <group if="$(arg kinect_enabled)">
-
-    <!-- Include poincloud_to_laserscan if simulated Kinect is attached -->
-    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan" output="screen">
-
-        <remap from="cloud_in" to="camera/depth/points"/>
-        <remap from="scan" to="camera/scan"/>
-        <rosparam>
-            target_frame: base_link # Leave empty to output scan in the pointcloud frame
-            tolerance: 1.0
-            min_height: 0.05
-            max_height: 1.0
-
-            angle_min: -0.52 # -30.0*M_PI/180.0
-            angle_max: 0.52 # 30.0*M_PI/180.0
-            angle_increment: 0.005 # M_PI/360.0
-            scan_time: 0.3333
-            range_min: 0.45
-            range_max: 4.0
-            use_inf: true
-
-            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
-            # 0 : Detect number of cores
-            # 1 : Single threaded
-            # 2->inf : Parallelism level
-            concurrency_level: 1
-        </rosparam>
-    </node>
-
-  </group>
+<!--  <include file="$(find microtrac_control)/launch/control.launch"/>-->
 
   <!-- Spawn robot in gazebo -->
   <node name="spawn_microtrac_model" pkg="gazebo_ros" type="spawn_model"

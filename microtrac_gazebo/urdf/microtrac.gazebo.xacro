@@ -25,8 +25,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 -->
 <robot name="microtrac_robot_gazebo" xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <xacro:include filename="$(find microtrac_gazebo)/urdf/accessories/kinect_camera.gazebo.xacro"/>
-
   <xacro:macro name="microtrac_robot_gazebo">
 
     <gazebo>
@@ -60,36 +58,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
       </plugin>
     </gazebo>
   
-    <xacro:if value="$(arg ur5_enabled)">
-      <!--Remove when https://github.com/ros-industrial/universal_robot/pull/168 is resolved -->
-      <gazebo reference="ur5_arm_shoulder_link">
-        <selfCollide>true</selfCollide>
-      </gazebo>
-      <gazebo reference="ur5_arm_upper_arm_link">
-        <selfCollide>true</selfCollide>
-      </gazebo>
-      <gazebo reference="ur5_arm_forearm_link">
-        <selfCollide>true</selfCollide>
-      </gazebo>
-      <gazebo reference="ur5_arm_wrist_1_link">
-        <selfCollide>true</selfCollide>
-      </gazebo>
-      <gazebo reference="ur5_arm_wrist_3_link">
-       <selfCollide>true</selfCollide>
-      </gazebo>
-      <gazebo reference="ur5_arm_wrist_2_link">
-        <selfCollide>true</selfCollide>
-      </gazebo>
-      <gazebo reference="ur5_arm_ee_link">
-        <selfCollide>true</selfCollide>
-      </gazebo>
-    </xacro:if>
-
-    <xacro:if value="$(arg kinect_enabled)">
-      <xacro:kinect_camera_gazebo prefix="camera"/>
-    </xacro:if>
-
-  </xacro:macro>
+</xacro:macro>
 
 </robot>
 
